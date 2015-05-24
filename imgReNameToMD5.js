@@ -215,77 +215,58 @@ function scanFolder(path){
                     folderList.push(tmpPath); 
                 } else {  
                     fileList.push(tmpPath); 
+                    //
+                    var file=tmpPath;
+                    var lowerFileName=file.toLowerCase();
+                        var extName="";
+                        if(lowerFileName.indexOf(".png")!=-1){
+                            extName=".png";
+                        }
+                        if(lowerFileName.indexOf(".jpg")!=-1){
+                            extName=".jpg";
+                        }    
+                        if(lowerFileName.indexOf(".jpeg")!=-1){
+                            extName=".jpg";
+                        }
+                        if(lowerFileName.indexOf(".gif")!=-1){
+                            extName=".gif";
+                        }
+                        if(lowerFileName.indexOf(".mp4")!=-1){
+                            extName=".mp4";
+                        }
+                        if(lowerFileName.indexOf(".mov")!=-1){
+                            extName=".mov";
+                        }
+                        /* 只处理图片和视频 不处理其他文件 */
+                        if(extName!=""){
+                            var file_name_arr=file.split("/");
+                            var data=fs.readFileSync(file,"utf-8");
+                            var new_name=md5(data);
+                            var file_0_name=file_name_arr[file_name_arr.length-1];
+                            var file_new_file=file.replace(file_0_name,new_name+extName);
+                            console.log("");
+                            console.log("正在重命名："+file);
+                            fs.renameSync(file,file_new_file);
+                            console.log("更名为："+file_new_file);
+                        }
+                    //
                 }  
             });  
         };  
 
     walk(path, fileList, folderList);
-
-    console.log('扫描' + path +'成功');
-
+    console.log("");
+    console.log('已经重命名完毕全部图片文件');
+    /*
     return {
         'files': fileList,
         'folders': folderList
     }
+    */
 }
 
 var path = process.argv[2];
-var files=scanFolder(path).files;
-files.forEach(function(file){
-    //var filename=md5(img_data);
-    //console.log(md5(file));
-    /*
-    fs.writeFile(path+'/'+filename+'.png',img_data,type, function (err) {
-        console.log('get img ok');
-    });
-    */
-    //
-    var lowerFileName=file.toLowerCase();
-
-    var extName="";
-
-    if(lowerFileName.indexOf(".png")!=-1){
-        extName=".png";
-    }
-    if(lowerFileName.indexOf(".jpg")!=-1){
-        extName=".jpg";
-    }    
-    if(lowerFileName.indexOf(".jpeg")!=-1){
-        extName=".jpg";
-    }
-    if(lowerFileName.indexOf(".gif")!=-1){
-        extName=".gif";
-    }
-    if(lowerFileName.indexOf(".mp4")!=-1){
-        extName=".mp4";
-    }
-    /*
-    if(lowerFileName.indexOf(".mov")!=-1){
-        extName=".mov";
-    }*/
-    /* 只处理图片 不处理其他文件 */
-    if(extName!=""){
-        console.log(extName);
-        var file_name_arr=file.split("/");
-
-        /*文件内容*/
-        var data=fs.readFileSync(file,"utf-8");
-
-        var new_name=md5(data);
-
-        var file_0_name=file_name_arr[file_name_arr.length-1];
-        var file_new_file=file.replace(file_0_name,new_name+extName);
-
-        console.log(file_new_file);
-        fs.rename(file,file_new_file,function(err){ 
-         if(err){ 
-            console.log("重命名失败！"); 
-         }else{ 
-            console.log("重命名成功！"); 
-         } 
-        });
-    }
-});
+scanFolder(path);
 /*
 node imgReNameToMD5.js path
 */
